@@ -33,6 +33,7 @@ Navigate to http://localhost:8000/
 
 # Dir Structure
 (venv) jawaidm@latitude:/var/www/docker-tut$ tree -a -I 'venv|__pycache__|*.swp'
+```
 .
 ├── app
 │   ├── db.sqlite3
@@ -48,6 +49,7 @@ Navigate to http://localhost:8000/
 │   └── requirements.txt
 ├── docker-compose.yml
 └── .env
+```
 
 # Build and run docker container
 ```
@@ -55,4 +57,38 @@ cd /var/www/docker-tut
 docker-compose build                                                                                                                                                                                        
 docker-compose up -d                                                                                                                                                                                        
 docker-compose logs -f
+```
+
+## Build/Start and run migrations
+```
+cd var/www/docker-tut
+docker-compose up -d --build
+docker-compose exec web python manage.py migrate --noinput
+```
+
+## Remove the volumes along with the containers
+```
+docker-compose down -v
+```
+
+## Connect to DB shell (if PG started as a postgres DB in container)
+```
+docker-compose exec db psql --username=hello_django --dbname=hello_django_dev
+```
+
+## Check if volume was created
+```
+docker volume inspect django-on-docker_postgres_data
+```
+
+# Create Postgres Database
+```
+sudo -u postgres psql
+postgres=# create database hello_django_dev;
+CREATE DATABASE
+
+postgres=# create extension postgis
+postgres=# \q
+
+psql -U dev -h localhost -p 5433 -d hello_django_dev
 ```

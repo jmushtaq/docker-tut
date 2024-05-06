@@ -12,9 +12,16 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import sys
+import confy
+from confy import env, database
+#import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+import ipdb; ipdb.set_trace()
+confy.read_environment_file(str(BASE_DIR)+"/.env")
+os.environ.setdefault("BASE_DIR", str(BASE_DIR))
 
 
 # Quick-start development settings - unsuitable for production
@@ -29,10 +36,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #ALLOWED_HOSTS = []
 #ALLOWED_HOSTS = ['*']
 
-SECRET_KEY = os.environ.get("SECRET_KEY", default="My_Secret_Key")
-DEBUG = bool(os.environ.get("DEBUG", default=True))
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+#SECRET_KEY = os.environ.get("SECRET_KEY", default="My_Secret_Key")
+#DEBUG = bool(os.environ.get("DEBUG", default=True))
+#ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG', False)
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = env('ALLOWED_HOSTS', [])
 
 # Application definition
 
@@ -81,12 +94,19 @@ WSGI_APPLICATION = 'hello_django.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
+
+# Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    # Defined in the DATABASE_URL env variable.
+    'default': database.config(),
 }
+
 
 
 # Password validation

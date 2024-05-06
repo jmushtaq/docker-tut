@@ -1,7 +1,8 @@
 Django==3.2
-django-extensions
 django-extensions==3.2.3
 #psycopg2==2.9.9
 psycopg2-binary
 ipython==8.12.3
+django-confy==1.0.4
+ipdb
 
