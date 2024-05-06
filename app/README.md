@@ -69,6 +69,9 @@ docker-compose exec web python manage.py migrate --noinput
 ## Remove the volumes along with the containers
 ```
 docker-compose down -v
+
+# delete all running containers
+docker rm -v $(docker ps --filter status=exited -q)
 ```
 
 ## Connect to DB shell (if PG started as a postgres DB in container)
@@ -84,11 +87,24 @@ docker volume inspect django-on-docker_postgres_data
 # Create Postgres Database
 ```
 sudo -u postgres psql
-postgres=# create database hello_django_dev;
+postgres=# create database tut_dev;
 CREATE DATABASE
 
 postgres=# create extension postgis
 postgres=# \q
 
-psql -U dev -h localhost -p 5433 -d hello_django_dev
+psql -U dev -h localhost -p 5433 -d tut_dev
+
+PGPASSWORD="<pw>" psql -h db-dev.c9awk6sqcgnn.ap-southeast-2.rds.amazonaws.com -U <pw> -d tut_dev
 ```
+
+```
+docker ps (ps -a) --> NNAMES
+docker exec -it <name> bash
+docker exec -it docker-tut-web-1 bash
+
+docker-compose run --rm web python manage.py makemigrations
+docker-compose run --rm web python manage.py migrate
+docker-compose run --rm web python manage.py runserver
+docker-compose run --rm web python manage.py createsuperuser
+`````

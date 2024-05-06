@@ -19,7 +19,7 @@ from confy import env, database
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-import ipdb; ipdb.set_trace()
+#import ipdb; ipdb.set_trace()
 confy.read_environment_file(str(BASE_DIR)+"/.env")
 os.environ.setdefault("BASE_DIR", str(BASE_DIR))
 
