@@ -101,6 +101,25 @@ psql -U dev -h localhost -p 5433 -d tut_dev
 PGPASSWORD="<pw>" psql -h db-dev.c9awk6sqcgnn.ap-southeast-2.rds.amazonaws.com -U <pw> -d tut_dev
 ```
 
+# DB Created by docker-compose.yml
+```
+docker-compose down
+docker-compose build
+docker-compose up -d
+docker exec -it docker-tut-db-1 bash
+
+psql -h db -U dev -d hello_django_dev
+
+# OR From app:
+docker exec -it docker-tut-web-1 bash
+./manage.py dbshell
+
+# Volume Mounts
+docker-compose ps -a
+docker inspect -f "{{ .Mounts }}" docker-tut-db-1
+[{volume docker-tut_postgres_data /var/lib/docker/volumes/docker-tut_postgres_data/_data /var/lib/postgresql/data local z true }]
+```
+
 
 # Commnds Ref
 ```

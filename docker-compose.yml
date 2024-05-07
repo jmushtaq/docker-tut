@@ -3,34 +3,65 @@ version: '3.8'
 services:
   web:
     image: docker-tut-web:latest
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    #stdin_open: true # docker run -i
+    #tty: true        # docker run -t
     #build: ./app
     build:
       context: ./app
       dockerfile: Dockerfile
-    #build: ./
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       #- ./app/:/usr/src/app/
       - ./app/media:/usr/src/app/media
+      - $SSH_AUTH_SOCK:/ssh-agent # Forward local machine SSH key to docker
     ports:
-      - 8000:8000
+      - 8001:8000
     env_file:
       - ./app/.env
     restart: 'no' # always|unless-stopped
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+    networks: 
+      - app_network
+    depends_on:
+      - db
+  db:
+    #image: postgres:15
+    image: postgis/postgis:15-3.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - $SSH_AUTH_SOCK:/ssh-agent # Forward local machine SSH key to docker
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev123
+      - POSTGRES_DB=hello_django_dev
+      - POSTGRES_EXTENSIONS=postgis
 
-      #- ./.env
-#    depends_on:
-#      - db
-#  db:
-#    image: postgres:15
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data/
-#    environment:
-#      - POSTGRES_USER=dev
-#      - POSTGRES_PASSWORD=dev123
-#      - POSTGRES_DB=hello_django_dev
-#
-#volumes:
-#  postgres_data:
+      - SSH_AUTH_SOCK=/ssh-agent
+      # psql -h db -U dev -d hello_django_dev
+    networks: 
+      - app_network
+  nginx:
+    container_name: hello_world
+    image: nginx
+    network_mode: host
+    #ports:
+    #  - 8001:80
+#  moon:
+#    container_name: moon 
+#    image: busybox 
+#    command: sleep infinity
+#    networks:
+#      - earth
+
+volumes:
+  postgres_data:
+
+# https://medium.com/@kesaralive/diving-deeper-into-docker-networking-with-docker-compose-737e3b8a3c8c
+networks:
+  app_network:
+    name: app_network
+    driver: bridge
+  earth:
+    name: earth 
+    driver: bridge
