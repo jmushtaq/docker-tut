@@ -72,6 +72,9 @@ docker-compose down -v
 
 # delete all running containers
 docker rm -v $(docker ps --filter status=exited -q)
+
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
 ```
 
 ## Connect to DB shell (if PG started as a postgres DB in container)
@@ -98,6 +101,8 @@ psql -U dev -h localhost -p 5433 -d tut_dev
 PGPASSWORD="<pw>" psql -h db-dev.c9awk6sqcgnn.ap-southeast-2.rds.amazonaws.com -U <pw> -d tut_dev
 ```
 
+
+# Commnds Ref
 ```
 docker ps (ps -a) --> NNAMES
 docker exec -it <name> bash
@@ -107,4 +112,29 @@ docker-compose run --rm web python manage.py makemigrations
 docker-compose run --rm web python manage.py migrate
 docker-compose run --rm web python manage.py runserver
 docker-compose run --rm web python manage.py createsuperuser
+
+docker-compose build
+docker-compose stop
+docker-compose down (-v | volumes)
+docker-compose config
+
+docker-compose up -d --build
+docker-compose exec web python manage.py migrate --noinput
 `````
+
+Docker Volume Command Ref
+```
+# create a volume
+docker volume create myvolume
+
+# list volums
+docker volume ls
+
+# delete a volume
+docker volume rm myvolume
+```
+
+Ports
+```
+docker inspect docker-tut-web-1
+```
