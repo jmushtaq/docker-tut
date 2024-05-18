@@ -157,3 +157,24 @@ Ports
 ```
 docker inspect docker-tut-web-1
 ```
+
+# Copy file between host and continer
+```
+# container nginx
+docker cp nginx:/etc/nginx/conf.d/default.conf .
+```
+
+# List images on DockerHub
+```
+# lists latest tagged images
+docker search jmushtaq 
+
+sudo apt install jq
+
+curl -L -s 'https://registry.hub.docker.com/v2/repositories/jmushtaq/disturbance/tags?page=1&page_size=10>' | jq '."results"[]["name"]'
+
+docker search dbcawa 
+curl -L -s 'https://registry.hub.docker.com/v2/repositories/dbcawa/das_gis/tags?page=1&page_size=10>' | jq '."results"[]["name"]'
+docker pull dbcawa/das_gis:2024.05.01.14.3136
+
+```
