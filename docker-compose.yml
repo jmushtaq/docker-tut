@@ -42,9 +42,12 @@ services:
     networks: 
       - app_network
   nginx:
-    container_name: hello_world
-    image: nginx
+    container_name: nginx
+    image: nginx-base:latest
     network_mode: host
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     #ports:
     #  - 8001:80
 #  moon:
