@@ -54,10 +54,6 @@ Navigate to http://localhost:8000/
 # Build and run docker container
 ```
 cd /var/www/docker-tut
-
-# ERROR 'WARN[0000] The "SSH_AUTH_SOCK" variable is not set. Defaulting to a blank string.'
-eval `ssh-agent -s`
-
 docker-compose build OR 
 docker-compose build web
 docker-compose up -d                                                                                                                                                                                        
