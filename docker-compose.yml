@@ -1,86 +1,78 @@
 services:
   web:
+    container_name: web
     image: docker-tut-web:latest
-    #stdin_open: true # docker run -i
-    #tty: true        # docker run -t
-    #build: ./app
     build:
       context: ./app
       dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      #- ./app/:/usr/src/app/
       - ./app/media:/usr/src/app/media
-      - $SSH_AUTH_SOCK:/ssh-agent # Forward local machine SSH key to docker
     ports:
-      - 8001:8000
-      #- 80:8000
+      #- :8001 # nginx default.conf required the internal container port!
+      - 9001:8000
+      #- 80:8000 # This works externally!
     env_file:
       - ./app/.env
     restart: 'no' # always|unless-stopped
-    environment:
-      - SSH_AUTH_SOCK=/ssh-agent
     networks: 
       - app_network
     depends_on:
       - db
   web2:
+    container_name: web2
     image: docker-tut-web2:latest
-    #stdin_open: true # docker run -i
-    #tty: true        # docker run -t
-    #build: ./app2
     build:
       context: ./app2
       dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      #- ./app/:/usr/src/app/
-      - ./app/media:/usr/src/app/media
-      - $SSH_AUTH_SOCK:/ssh-agent # Forward local machine SSH key to docker
+      - ./app2/media:/usr/src/app2/media
     ports:
-      - 8002:8000
-      #- 80:8000
+      #- :8002 # nginx default.conf required the internal container port!
+      - 9002:8000
+      #- 80:8000 # This works externally!
     env_file:
-      - ./app/.env
+      - ./app2/.env
     restart: 'no' # always|unless-stopped
-    environment:
-      - SSH_AUTH_SOCK=/ssh-agent
     networks: 
       - app_network
     depends_on:
       - db
-
   db:
+    container_name: db
     #image: postgres:15
     image: postgis/postgis:15-3.4
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      - $SSH_AUTH_SOCK:/ssh-agent # Forward local machine SSH key to docker
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - ./.env
     environment:
-      - POSTGRES_USER=dev
-      - POSTGRES_PASSWORD=dev123
-      - POSTGRES_DB=hello_django_dev
-      - POSTGRES_EXTENSIONS=postgis
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_EXTENSIONS=${POSTGRES_EXTENSIONS}
 
-      - SSH_AUTH_SOCK=/ssh-agent
-      # psql -h db -U dev -d hello_django_dev
+      # psql -h db -U postgres -d postgres
     networks: 
       - app_network
+
   nginx:
     container_name: nginx
     image: nginx-base:latest
-    network_mode: host
+    # network_mode: host
     build:
       context: ./nginx
       dockerfile: Dockerfile
-    #ports:
-    #  - 8001:80
-#  moon:
-#    container_name: moon 
-#    image: busybox 
-#    command: sleep infinity
-#    networks:
-#      - earth
+    ports:
+      - 80:80
+#      - 443:443
+    links:
+      - web
+      - web2
+    networks: 
+      - app_network
 
 volumes:
   postgres_data:
@@ -89,7 +81,4 @@ volumes:
 networks:
   app_network:
     name: app_network
-    driver: bridge
-  earth:
-    name: earth 
     driver: bridge

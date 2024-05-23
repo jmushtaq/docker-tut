@@ -45,6 +45,7 @@ RUN pip install -r requirements.txt
 
 # copy project
 COPY . .
+COPY ./default_urlconf_1.html /usr/local/lib/python3.8/site-packages/django/views/templates/default_urlconf.html
 
 RUN echo "alias ll='ls -alF'" >> ~/.bashrc
 
