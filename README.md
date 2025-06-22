@@ -1,6 +1,19 @@
-#upstream django {
-#    server web:8000;
-#}
+docker ps
+
+docker-compose build nginx
+docker-compose up -d nginx
+
+docker-compose down nginx
+docker-compose restart nginx
+
+docker-compose logs
+
+----
+www.portchecktool.com
+----
+192.168.0.50:9001
+ubnt:9001
+shelley.ddns.net (externally, once confirgured in NOIP.com)
 
 server {
     listen      80 default_server;
@@ -15,12 +28,7 @@ server {
     location / {
         # NOTE: External URL only works for internal container port --> web:8000 (not 9001 !)
         proxy_pass http://web:8000/;
-        #proxy_pass http://web:9001/;
-        #proxy_pass http://django;
-        #try_files $uri $uri/ =404;
     }
-
-    #return 301 http://$host:$request_uri;
 }
 
 server {
@@ -30,11 +38,7 @@ server {
     location / {
         # NOTE: External URL only works for internal container port --> web2:8000 (not 9002 !)
         proxy_pass http://web2:8000/;
-        #proxy_pass http://django;
-        #try_files $uri $uri/ =404;
     }
-
-    #return 301 http://$host:$request_uri;
 }
 
 

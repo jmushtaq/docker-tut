@@ -1,0 +1,4 @@
+# pw; postgres
+psql -h localhost -p 5432 -U postgres -d postgres
+
+docker exec -it db bash
