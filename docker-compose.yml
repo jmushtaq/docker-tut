@@ -1,4 +1,23 @@
 services:
+  ledgergw:
+    container_name: ledgergw
+    #image: dbcawa/ledgergw:latest
+    image: dbcawa/ledgergw:local
+    build:
+      context: ./app
+      dockerfile: /home/jm/projects/ledger/Dockerfile
+    #command: python manage_ledgergw.py runserver 0.0.0.0:8000
+    ports:
+      - 8071:8080 # ext:int (see default.conf for the 9001)
+      #- 9003:8080 # ext:int (see default.conf for the 9001)
+    env_file:
+      - /home/jm/projects/ledger/.env
+    restart: 'unless-stopped' # always|unless-stopped|no
+    networks:
+      - app_network
+    depends_on:
+      - db
+
   web:
     container_name: web
     image: docker-tut-web:latest
